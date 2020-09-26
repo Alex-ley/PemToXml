@@ -8,18 +8,26 @@ Converting RSA PEM key (PKCS#1) to XML compatible for .Net
 
 For windows you may find binaries here: http://www.voidspace.org.uk/python/modules.shtml#pycrypto
 
-## Tested scenarious:
-1. PHP encrypt/decrypt using PEM keys, C# decrypt using coverted PEM to XML keys
-2. C# encrypt/decrypt using using XML keys, PHP decrypt using coverted XML to PEM keys
+## Tested scenarios:
+1. PHP encrypt/decrypt using PEM keys, C# decrypt using converted PEM to XML keys
+2. C# encrypt/decrypt using using XML keys, PHP decrypt using converted XML to PEM keys
 
 ## Usage:
-Convert a public key from XML to PEM: `python PemToXml.py -ptox -pub "path/to/public.pem"`
+Convert a public key from PEM to XML: `python PemToXml.py -ptox -pub "path/to/public.pem"`
 
-Convert a public key from PEM to XML: `python PemToXml.py -xtop -pub "path/to/public.xml"`
+Convert a public key from XML to PEM: `python PemToXml.py -xtop -pub "path/to/public.xml"`
 
-Convert a private key from XML to PEM: `python PemToXml.py -ptox -priv "path/to/private.pem"`
+Convert a private key from PEM to XML: `python PemToXml.py -ptox -priv "path/to/private.pem"`
 
-Convert a private key from PEM to XML: `python PemToXml.py -xtop -priv "path/to/private.xml"`
+Convert a private key from XML to PEM: `python PemToXml.py -xtop -priv "path/to/private.xml"`
+
+## Command line flags:
+```bash
+("-pub", "--public") => help="Public Key"
+("-priv", "--private") => help="Private Key"
+("-xtop", "--xmltopem") => help="XML to PEM"
+("-ptox", "--pemtoxml") => help="PEM to XML"
+ ```
 
 ## .Net example
 ```csharp

@@ -116,7 +116,7 @@ def privKeyPEM(xmlPrivateKeyFile):
 #
 def parse_args():
    """Create the arguments"""
-   parser = argparse.ArgumentParser('\nxmlpem.py --xmltopem --public mypublickeyfile.xml\nxmlpem.py --pentoxml --private myprivatekeyfile.pem')
+   parser = argparse.ArgumentParser('\nPemToXml.py --xmltopem --public mypublickeyfile.xml\nPemToXml.py --pemtoxml --private myprivatekeyfile.pem')
    parser.add_argument("-pub", "--public", help="Public Key")
    parser.add_argument("-priv", "--private", help="Private Key")
    parser.add_argument("-xtop", "--xmltopem", help="XML to PEM", action='store_true')
