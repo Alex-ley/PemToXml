@@ -22,18 +22,23 @@ def pubKeyXML(pemPublicKeyFile):
    with open (pemPublicKeyFile, 'rb') as pkFile:
       pemPublicKey = pkFile.read()
    publicKey = RSA.importKey(pemPublicKey)
-   xml  = '<RSAKeyValue>'
-   xml += '<Modulus>'
-   xml += standard_b64encode(number.long_to_bytes(publicKey.n)).decode("utf-8")
-   xml += '</Modulus>'
-   xml += '<Exponent>'
-   xml += standard_b64encode(number.long_to_bytes(publicKey.e)).decode("utf-8")
-   xml += '</Exponent>'
-   xml += '</RSAKeyValue>'
+
+   doc = minidom.Document()
+   root = doc.createElement('RSAKeyValue')
+   doc.appendChild(root)
+
+   xml_tag_list = ['Modulus', 'Exponent']
+   public_key_attrs = ['n', 'e']
+
+   for tag, attr in zip(xml_tag_list, public_key_attrs):
+       elem = doc.createElement(tag)
+       textNode = doc.createTextNode(standard_b64encode(number.long_to_bytes(getattr(publicKey, attr))).decode("utf-8"))
+       elem.appendChild(textNode)
+       root.appendChild(elem)
 
    fileName = basename(pemPublicKeyFile)
    with open (fileName+'.xml', 'w') as pkFile:
-      pkFile.write(xml)
+      pkFile.write(doc.toprettyxml())
    return
 #
 # CreateXMLPrivKey
@@ -41,41 +46,28 @@ def pubKeyXML(pemPublicKeyFile):
 def privKeyXML(pemPrivateKeyFile):
    with open (pemPrivateKeyFile, 'rb') as pkFile:
       pemPrivKey = pkFile.read()
-   print(pemPrivKey)
+   # print(pemPrivKey)
    lines = pemPrivKey.replace(" ".encode('utf-8'), ''.encode('utf-8')).split()
-   print(lines)
+   # print(lines)
    lines_str = [x.decode("utf-8") for x in lines]
    keyDer = DerSequence()
    keyDer.decode(a2b_base64(''.join(lines_str[1:-1])))
-   xml  = '<RSAKeyValue>'
-   xml += '<Modulus>'
-   xml += standard_b64encode(number.long_to_bytes(keyDer[1])).decode("utf-8")
-   xml += '</Modulus>'
-   xml += '<Exponent>'
-   xml += standard_b64encode(number.long_to_bytes(keyDer[2])).decode("utf-8")
-   xml += '</Exponent>'
-   xml += '<D>'
-   xml += standard_b64encode(number.long_to_bytes(keyDer[3])).decode("utf-8")
-   xml += '</D>'
-   xml += '<P>'
-   xml += standard_b64encode(number.long_to_bytes(keyDer[4])).decode("utf-8")
-   xml += '</P>'
-   xml += '<Q>'
-   xml += standard_b64encode(number.long_to_bytes(keyDer[5])).decode("utf-8")
-   xml += '</Q>'
-   xml += '<DP>'
-   xml += standard_b64encode(number.long_to_bytes(keyDer[6])).decode("utf-8")
-   xml += '</DP>'
-   xml += '<DQ>'
-   xml += standard_b64encode(number.long_to_bytes(keyDer[7])).decode("utf-8")
-   xml += '</DQ>'
-   xml += '<InverseQ>'
-   xml += standard_b64encode(number.long_to_bytes(keyDer[8])).decode("utf-8")
-   xml += '</InverseQ>'
-   xml += '</RSAKeyValue>'
+
+   doc = minidom.Document()
+   root = doc.createElement('RSAKeyValue')
+   doc.appendChild(root)
+
+   xml_tag_list = ['Modulus', 'Exponent', 'D', 'P', 'Q', 'DP', 'DQ', 'InverseQ']
+
+   for idx, tag in enumerate(xml_tag_list, start=1):
+       elem = doc.createElement(tag)
+       textNode = doc.createTextNode(standard_b64encode(number.long_to_bytes(keyDer[idx])).decode("utf-8"))
+       elem.appendChild(textNode)
+       root.appendChild(elem)
+
    fileName = basename(pemPrivateKeyFile)
    with open (fileName+'.xml', 'w') as pkFile:
-      pkFile.write(xml)
+      pkFile.write(doc.toprettyxml())
    return
 #
 # Get Long Int
