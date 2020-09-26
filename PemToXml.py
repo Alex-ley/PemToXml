@@ -2,6 +2,7 @@
 #
 # Converting RSA PEM key (PKCS#1) to XML compatible for .Net
 # from https://github.com/MisterDaneel/
+# extended with Python 3 support https://github.com/Alex-ley/PemToXml
 #
 # Need pycrypto installed.
 #
@@ -12,6 +13,7 @@ from base64 import standard_b64encode, b64decode
 from binascii import a2b_base64
 from os.path import basename, exists
 from xml.dom import minidom
+# import lxml.etree as et # alternative xml lib
 import argparse
 #
 # CreateXMLPubKey
@@ -22,12 +24,13 @@ def pubKeyXML(pemPublicKeyFile):
    publicKey = RSA.importKey(pemPublicKey)
    xml  = '<RSAKeyValue>'
    xml += '<Modulus>'
-   xml += standard_b64encode(number.long_to_bytes(publicKey.n))
+   xml += standard_b64encode(number.long_to_bytes(publicKey.n)).decode("utf-8")
    xml += '</Modulus>'
    xml += '<Exponent>'
-   xml += standard_b64encode(number.long_to_bytes(publicKey.e))
+   xml += standard_b64encode(number.long_to_bytes(publicKey.e)).decode("utf-8")
    xml += '</Exponent>'
    xml += '</RSAKeyValue>'
+
    fileName = basename(pemPublicKeyFile)
    with open (fileName+'.xml', 'w') as pkFile:
       pkFile.write(xml)
@@ -38,35 +41,36 @@ def pubKeyXML(pemPublicKeyFile):
 def privKeyXML(pemPrivateKeyFile):
    with open (pemPrivateKeyFile, 'rb') as pkFile:
       pemPrivKey = pkFile.read()
-   print pemPrivKey
-   lines = pemPrivKey.replace(" ", '').split()
-   print lines
+   print(pemPrivKey)
+   lines = pemPrivKey.replace(" ".encode('utf-8'), ''.encode('utf-8')).split()
+   print(lines)
+   lines_str = [x.decode("utf-8") for x in lines]
    keyDer = DerSequence()
-   keyDer.decode(a2b_base64(''.join(lines[1:-1])))
+   keyDer.decode(a2b_base64(''.join(lines_str[1:-1])))
    xml  = '<RSAKeyValue>'
    xml += '<Modulus>'
-   xml += standard_b64encode(number.long_to_bytes(keyDer[1]))
+   xml += standard_b64encode(number.long_to_bytes(keyDer[1])).decode("utf-8")
    xml += '</Modulus>'
    xml += '<Exponent>'
-   xml += standard_b64encode(number.long_to_bytes(keyDer[2]))
+   xml += standard_b64encode(number.long_to_bytes(keyDer[2])).decode("utf-8")
    xml += '</Exponent>'
    xml += '<D>'
-   xml += standard_b64encode(number.long_to_bytes(keyDer[3]))
+   xml += standard_b64encode(number.long_to_bytes(keyDer[3])).decode("utf-8")
    xml += '</D>'
    xml += '<P>'
-   xml += standard_b64encode(number.long_to_bytes(keyDer[4]))
+   xml += standard_b64encode(number.long_to_bytes(keyDer[4])).decode("utf-8")
    xml += '</P>'
    xml += '<Q>'
-   xml += standard_b64encode(number.long_to_bytes(keyDer[5]))
+   xml += standard_b64encode(number.long_to_bytes(keyDer[5])).decode("utf-8")
    xml += '</Q>'
    xml += '<DP>'
-   xml += standard_b64encode(number.long_to_bytes(keyDer[6]))
+   xml += standard_b64encode(number.long_to_bytes(keyDer[6])).decode("utf-8")
    xml += '</DP>'
    xml += '<DQ>'
-   xml += standard_b64encode(number.long_to_bytes(keyDer[7]))
+   xml += standard_b64encode(number.long_to_bytes(keyDer[7])).decode("utf-8")
    xml += '</DQ>'
    xml += '<InverseQ>'
-   xml += standard_b64encode(number.long_to_bytes(keyDer[8]))
+   xml += standard_b64encode(number.long_to_bytes(keyDer[8])).decode("utf-8")
    xml += '</InverseQ>'
    xml += '</RSAKeyValue>'
    fileName = basename(pemPrivateKeyFile)
@@ -81,7 +85,7 @@ def GetLong(nodelist):
    for node in nodelist:
       if node.nodeType == node.TEXT_NODE:
          rc.append(node.data)
-   string = ''.join(rc) 
+   string = ''.join(rc)
    return number.bytes_to_long(b64decode(string))
 #
 # CreatePEMPubKey
@@ -95,7 +99,7 @@ def pubKeyPEM(xmlPublicKeyFile):
    publicKey = RSA.construct((modulus, exponent))
    fileName = basename(xmlPublicKeyFile)
    with open (fileName+'.pem', 'w') as pkFile:
-      pkFile.write(publicKey.exportKey())
+      pkFile.write(publicKey.exportKey().decode('utf-8'))
    return
 #
 # CreatePEMPrivKey
@@ -113,7 +117,7 @@ def privKeyPEM(xmlPrivateKeyFile):
    privateKey = RSA.construct((modulus, exponent, d, p, q, qInv))
    fileName = basename(xmlPrivateKeyFile)
    with open (fileName+'.pem', 'w') as pkFile:
-      pkFile.write(privateKey.exportKey())
+      pkFile.write(privateKey.exportKey().decode('utf-8'))
    return
 #
 # Parser args
@@ -145,6 +149,6 @@ def main(args):
          inputfile = args.private
          privKeyPEM(inputfile)
    else:
-      print 'Nothing to do'
+      print('Nothing to do')
 if __name__ == "__main__":
    main(parse_args())

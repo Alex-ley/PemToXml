@@ -1,1 +1,6 @@
 *~
+__pycache__
+*.pem
+private_key*
+public_key*
+keys

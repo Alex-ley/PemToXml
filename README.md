@@ -3,7 +3,7 @@
 Converting RSA PEM key (PKCS#1) to XML compatible for .Net
 
 ## Requirements:
-1. Tested with python version 2.7
+1. Tested with python version 3.6.8 Anaconda
 2. Uses pycrypto
 
 For windows you may find binaries here: http://www.voidspace.org.uk/python/modules.shtml#pycrypto
@@ -17,9 +17,9 @@ Convert a public key from XML to PEM: `python PemToXml.py -ptox -pub "path/to/pu
 
 Convert a public key from PEM to XML: `python PemToXml.py -xtop -pub "path/to/public.xml"`
 
-Convert a public key from XML to PEM: `python PemToXml.py -ptox -priv "path/to/private.pem"`
+Convert a private key from XML to PEM: `python PemToXml.py -ptox -priv "path/to/private.pem"`
 
-Convert a public key from PEM to XML: `python PemToXml.py -xtop -priv "path/to/private.xml"`
+Convert a private key from PEM to XML: `python PemToXml.py -xtop -priv "path/to/private.xml"`
 
 ## .Net example
 ```csharp
@@ -46,7 +46,7 @@ public static string Encrypt(string data)
         rsa.FromXmlString(publicKeyXml);
         encryptedData = rsa.Encrypt(dataToEncrypt, false);
     }
-    return Convert.ToBase64String(encryptedData); 
+    return Convert.ToBase64String(encryptedData);
 }
 
 // let exception be thrown if error
